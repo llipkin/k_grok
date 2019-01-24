@@ -67,9 +67,9 @@
 # p7zip -d Ubuntu_16.10_Yakkety-VB-64bit.7z
 
 read -p "Enter your UCSC username: " username
-input_name="cmps107-$username"
+input_name="cmps107-<$username>"
 # Variable Init phase
-export VM_DISK_DIR=${VM_DISK_DIR:-$HOME/Downloads/64bit}
+export VM_DISK_DIR=${VM_DISK_DIR:-$HOME/vm_disks/64bit}
 export VDI=${VDI:-"$VM_DISK_DIR/Ubuntu 18.10 Cosmic (64bit).vdi"}
 export VMNAME=${VMNAME:-$input_name}
 # determine your host's primary network adapter ...
@@ -102,7 +102,7 @@ vboxmanage storageattach $VMNAME --storagectl SATA --port 0 --device 0 --type hd
 # VM network config phase
 vboxmanage modifyvm $VMNAME --nic1 nat --nictype1 virtio
 vboxmanage modifyvm $VMNAME --nic2 hostonly --nictype2 82540EM
-vboxmanage modifyvm $VMNAME --hostonlyadapter2 vboxnet1
+vboxmanage modifyvm $VMNAME --hostonlyadapter2 vboxnet0
 
 # VM console config phase (optional)
 # send serial console to a log file

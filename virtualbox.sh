@@ -66,53 +66,23 @@
 # and then uncompressed it with a command such as the following:
 # p7zip -d Ubuntu_16.10_Yakkety-VB-64bit.7z
 
-# Variable Init phase
-export VM_DISK_DIR=$HOME/vm_disks
-export VDI="$VM_DISK_DIR/Ubuntu 16.10 Yakkety (64bit).vdi"
-
-
-# two possibilities:
-# 1. already exists:
-
-# check for file extension in current folder called .vbox-prev
-# if exists, check if the name of this file goes "cmps107-_(something)_.vbox-prev"
-# 	verification check: save the name of this file, open the file, parse, check if name="something" is the same as the file name itself
-# 	if the file name and the name="something" match, then load this name into the export VMNAME
-# Don't create a new vboxnet if one already exists for our current VM
-
-# 2. does not exist
-# otherwise, ask for input and create a new file
-# check if the folder has .vdi image
-
-
-# count1=0
-
-# for file in "ls $1"
-# do
-# if [[ $file == *.vbox-prev ]]; then 
-#     echo "is a vbox-prev file"
-#     (( count1++ ))
-# echo $count1       
-
-
-
 read -p "Enter your UCSC username: " username
-
-input_name="cmps107-<${username}>"
-
-
-export VMNAME=$input_name
+input_name="cmps107-$username"
+# Variable Init phase
+export VM_DISK_DIR=${VM_DISK_DIR:-$HOME/64bit}
+export VDI=${VDI:-"$VM_DISK_DIR/Ubuntu 18.10 Cosmic (64bit).vdi"}
+export VMNAME=${VMNAME:-$input_name}
 # determine your host's primary network adapter ...
 # this may work on Linux
-export HOST_ADAPTER=$(ip link show up | grep "<BROAD" | cut -f2 -d":")
+export HOST_ADAPTER=${HOST_ADAPTER:-$(ip link show up | grep "<BROAD" | cut -f2 -d":")}
 # this may work on Mac OS X
-export HOST_ADAPTER=$(ifconfig | grep -B4 "status: active" | grep -B3 "inet " | head -1 | cut -f1 -d":")
+export HOST_ADAPTER=${HOST_ADAPTER:-$(ifconfig | grep -B4 "status: active" | grep -B3 "inet " | head -1 | cut -f1 -d":")}
 
 # Host configuration phase
 # On your host:
 vboxmanage hostonlyif create
 # Assuming vboxnet1 was created
-vboxmanage dhcpserver add --ifname vboxnet1 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254 --enable
+vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254 --enable
 
 # For more info about these instructions, see:
 # https://www.virtualbox.org/manual/ch08.html
